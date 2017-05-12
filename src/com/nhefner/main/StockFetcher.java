@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.SimpleDateFormat;
@@ -31,7 +32,7 @@ public class StockFetcher {
 	public StockFetcher(String stockMarket) throws ConfigurationException {
 		cl = new ConfigLoader();
 		this.outputPath = (String) cl.getProperty(ConfigProperty.DATA_PATH) + stockMarket + "Yahoo//";
-		this.stockMarket = stockMarket;
+		this.stockMarket = stockMarket.toUpperCase();
 		this.symbolFile = cl.getProperty(ConfigProperty.SYMBOL_PATH) + stockMarket + ".txt";
 	}
 
@@ -54,11 +55,11 @@ public class StockFetcher {
 			// String yahooUrl =
 			// "http://real-chart.finance.yahoo.com/table.csv?s=FTSEMIB.MI&a=00&b=1&c=2000&d=08&e=8&f=2016&g=d&ignore=.csv";
 			String yahooUrl;
-			if (stockMarket.equals("MI")) {
-				yahooUrl = "http://chart.finance.yahoo.com/table.csv?s=" + sym + ".MI";
-			} else {
-				yahooUrl = "http://chart.finance.yahoo.com/table.csv?s=" + sym;
-			}
+			//if (stockMarket.equals("NYSE")) {
+				yahooUrl = "https://chart.finance.yahoo.com/table.csv?s=" + sym;
+			//} else {
+			//	yahooUrl = "https://chart.finance.yahoo.com/table.csv?s=" + sym + "." + stockMarket;
+			//}
 			System.out.println(yahooUrl);
 			URL yahoo = new URL(yahooUrl);
 			URLConnection connection = yahoo.openConnection();
@@ -79,6 +80,7 @@ public class StockFetcher {
 			}
 
 			fw.close();
+			is.close();
 			// Parse CSV Into Array
 			// Only split on commas that aren't in quotes
 			// String[] stockinfo =
@@ -242,7 +244,7 @@ public class StockFetcher {
 	public static void main(String[] args) {
 		StockFetcher sf;
 		try {
-			sf = new StockFetcher("MI");
+			sf = new StockFetcher("PA");
 			sf.getYahooData();
 			List<String> upToDateSymbolList = new LinkedList<String>();
 			List<String> outOfDateSymbolList = new LinkedList<String>();
